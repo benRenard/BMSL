@@ -23,14 +23,14 @@ module RegressionFunk
 !~*		4. GetRegParNumber(RegressionFunk,covariate,npar,err,mess)
 !~*		5. LinkFunk(LinkFunk,x,fx,feas,err,mess)
 !~*		6. GetRegCovNumber(RegressionFunk,ncov,err,mess)
-!~*		7. GetRegioanlRegCovNumber(RegressionFunk,ncov,err,mess)
+!~*		7. GetRegionalRegCovNumber(RegressionFunk,ncov,err,mess)
 !~**********************************************************************
 use kinds_dmsl_kit ! numeric kind definitions from DMSL
 
 implicit none
 Private
 public :: ApplyRegressionFunk, ApplyRegionalRegFunk ,InverseLinkFunk, LinkFunk, GetRegParNumber,&
-             GetRegCovNumber, GetRegioanlRegCovNumber !,GetSpatParNb,GetSpatCovNb,ApplySpatRegFunc
+             GetRegCovNumber, GetRegionalRegCovNumber !,GetSpatParNb,GetSpatCovNb,ApplySpatRegFunc
 
 Character(100), parameter, PUBLIC:: &
             Linear='Linear',Linaire='Linear',&
@@ -530,7 +530,7 @@ end subroutine GetRegCovNumber
 
 
 
-pure subroutine GetRegioanlRegCovNumber(RegressionFunk,ncov,err,mess)
+pure subroutine GetRegionalRegCovNumber(RegressionFunk,ncov,err,mess)
 
 !^**********************************************************************
 !^* Purpose: Get the number of covariates of a regional regression function
@@ -593,7 +593,7 @@ case default
 	mess="GetRegionalRegCovNumber:UnknownRegressionFunk";err=1;return
 end select
 
-end subroutine GetRegioanlRegCovNumber
+end subroutine GetRegionalRegCovNumber
 
 
 

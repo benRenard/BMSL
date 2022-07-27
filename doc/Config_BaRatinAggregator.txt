@@ -1,0 +1,39 @@
+**** Input / Ouput files ****                                                                         ! Cosmetics
+"C:\BEN\Projets\D\Dstay2015\RCuncertainty\FreshRuns\Taffignon\base\HHtime.BAD"                        ! Input time file?
+0                                                                                                     ! number of header lines
+35057                                                                                                 ! number of lines (time steps)
+302                                                                                                   ! Input time file format? see available formats below
+"C:\BEN\Projets\D\Dstay2015\RCuncertainty\FreshRuns\Taffignon\base\HHtime_h.BAD"                      ! Output time file?
+301                                                                                                   ! Output time file format? see available formats below
+"C:\BEN\Projets\D\Dstay2015\RCuncertainty\FreshRuns\Taffignon\base\Results_Qt_Spaghetti_111.txt"      ! Input spaghetti file?
+1                                                                                                     ! number of header lines
+500                                                                                                   ! number of spaghettis (warning: first column is H, so total number of columns is nspag+1)
+-9999.                                                                                                ! value denoting missing data
+"C:\BEN\Projets\D\Dstay2015\RCuncertainty\FreshRuns\Taffignon\base\Results_Qt_Spaghetti_111_h.txt"    ! Output spaghetti file?
+**** Properties of the aggregation grid ****                                                          ! Cosmetics
+1988,9,16,6,0,0                                                                                       ! First date: year,month,day,hour,minute,second
+2014,3,6,6,0,0                                                                                        ! Last date: year,month,day,hour,minute,second
+"h"                                                                                                   ! aggregation scale: "Y","M","D","h","m" or "s"
+1                                                                                                     ! scale multiplier: e.g. for 15-minute aggregation, scale = "m" and scale mult = 15
+**** Properties of the aggregation operator ****                                                      ! Cosmetics
+"average"                                                                                             ! aggregation function: "average", "sum", "min" or "max"
+.true.                                                                                                ! safe handling of MV (true: MV are countagious, false: ignore MV)
+.true.                                                                                                ! safe interpolation (true: create MV if discontinuity, false: ignore discontinuity codes)
+666                                                                                                   ! option for controlling speed vs. numerical accuracy. 666 = slow but safe, 0 = fast but lower accuracy (still acceptable in many cases)
+
+
+***************************************************************
+Available time formats
+Daily:
+1. 'yyyymmdd'
+2. 'dd/mm/yyyy'
+3. 'day month year [French]'
+4. 'day month year [English]'
+5. 'ddmmyyyy'
+Hourly:
+101. 'yyyymmddhh'
+Secondly:
+301. 'dd/mm/yyyy hh:mm:ss'
+302. 'dd/mm/yy hh:mm:ss' NOT RECOMMENDED!!!! if yy=20, how do I know if it's 2020 or 1920 ????
+Monthly:
+401. 'yyyymm'

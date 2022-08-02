@@ -14,10 +14,10 @@ module EmpiricalStats_tools
 !~* 2Do List: enhance extrapolation for pval & quantile evaluators
 !~**********************************************************************
 !~* Quick description of public procedures:
-!~*		1. GettPP: plotting position catalogue
-!~*		2. GetEmpiricalPval
-!~*		3. GetEmpiricalQuantile
-!~*		4. GetEmpiricalStats, 15 statistics frequently used in statistical summaries
+!~*     1. GettPP: plotting position catalogue
+!~*     2. GetEmpiricalPval
+!~*     3. GetEmpiricalQuantile
+!~*     4. GetEmpiricalStats, 15 statistics frequently used in statistical summaries
 !~**********************************************************************
 
 use kinds_dmsl_kit ! numeric kind definitions from DMSL
@@ -55,19 +55,19 @@ pure subroutine GetPP(i,n,formula,pp,err,mess)
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1. i, rank
-!^*		2. n, total 
-!^*		3. [formula], default is Hazen - see below for list 
+!^*     1. i, rank
+!^*     2. n, total
+!^*     3. [formula], default is Hazen - see below for list
 !^* OUT
-!^*		1. pp
-!^*		2. err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3. mess, error message
+!^*     1. pp
+!^*     2. err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3. mess, error message
 !^**********************************************************************
 
 ! "Standard"     (i)/(n)
 ! "MinusOne"     (i-1)/(n)
 ! "Hazen"        (i-0.5)/(n)
-! "Weibull"      (i)/(n+1) 
+! "Weibull"      (i)/(n+1)
 ! "Benard"       (i-0.3)/(n+0.4)
 ! "Cunnane"      (i-0.4)/(n+0.2)
 ! "Beard"        (i-0.31)/(n+0.38)
@@ -133,19 +133,19 @@ subroutine GetRank(xIN,mv,xOut,err,mess)
 !^**********************************************************************
 !^* Last modified: 22/10/2012
 !^**********************************************************************
-!^* Comments: No randomization for ties 
+!^* Comments: No randomization for ties
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
 !^* 2Do List: Implement options for ties
 !^**********************************************************************
 !^* IN
-!^*		1. xIN, original data
-!^*		2. mv, value for missing data
+!^*     1. xIN, original data
+!^*     2. mv, value for missing data
 !^* OUT
-!^*		1. xOUT, ranks
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1. xOUT, ranks
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 use numerix_dmsl_kit, only:indexx_qsort
 real(mrk),intent(in)::xIN(:),mv
@@ -194,14 +194,14 @@ subroutine GetEmpiricalPval(obs,x,ppFormula,IsXSorted,pv,err,mess)
 !^* 2Do List: Try smarter extrapolation schemes for tails
 !^**********************************************************************
 !^* IN
-!^*		1. obs, value whose pval is sought
-!^*		2. x, sample used to compute the empirical cdf
-!^*		3. [ppFormula] (default is Hazen)
-!^*		4. [IsXSorted] (default is false) - might save time to sort out of this sub
+!^*     1. obs, value whose pval is sought
+!^*     2. x, sample used to compute the empirical cdf
+!^*     3. [ppFormula] (default is Hazen)
+!^*     4. [IsXSorted] (default is false) - might save time to sort out of this sub
 !^* OUT
-!^*		1.pv
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1.pv
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 use utilities_dmsl_kit, only:linearInterp
 use numerix_dmsl_kit, only:quicksort
@@ -271,14 +271,14 @@ subroutine GetEmpiricalQuantile(p,x,ppFormula,IsXSorted,q,err,mess)
 !^* 2Do List: Try smarter extrapolation schemes for tails
 !^**********************************************************************
 !^* IN
-!^*		1. p, p-value
-!^*		2. x, sample used to compute the empirical cdf
-!^*		3. [ppFormula] (default is Hazen)
-!^*		4. [IsXSorted] (default is false) - might save time to sort out of this sub
+!^*     1. p, p-value
+!^*     2. x, sample used to compute the empirical cdf
+!^*     3. [ppFormula] (default is Hazen)
+!^*     4. [IsXSorted] (default is false) - might save time to sort out of this sub
 !^* OUT
-!^*		1. q, the empirical p-quantile
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1. q, the empirical p-quantile
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 use utilities_dmsl_kit, only:linearInterp
 use numerix_dmsl_kit, only:quicksort
@@ -365,27 +365,27 @@ subroutine GetEmpiricalStats(x, & !data,
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1.x, data vector
-!^*		2.[ppFormula], Formula for plotting position (default is Hazen)
+!^*     1.x, data vector
+!^*     2.[ppFormula], Formula for plotting position (default is Hazen)
 !^* OUT
-!^*		1. [n], sample size
-!^*		2. [mini], sample minimum
-!^*		3. [maxi], sample maximum
-!^*		4. [range], max-min
-!^*		5. [mean]
-!^*		6. [median]
-!^*		7. [LeftDecile]
-!^*		8. [LeftQuartile]
-!^*		9. [RightDecile]
-!^*		10. [RightQuartile]
-!^*		11. [std]
-!^*		12. [var]
-!^*		13. [CV]
-!^*		14. [skewness]
-!^*		15. [kurtosis] EXCESS kurtosis
-!^*		16. [all15]
-!^*		17.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		18.mess, error message
+!^*     1. [n], sample size
+!^*     2. [mini], sample minimum
+!^*     3. [maxi], sample maximum
+!^*     4. [range], max-min
+!^*     5. [mean]
+!^*     6. [median]
+!^*     7. [LeftDecile]
+!^*     8. [LeftQuartile]
+!^*     9. [RightDecile]
+!^*     10. [RightQuartile]
+!^*     11. [std]
+!^*     12. [var]
+!^*     13. [CV]
+!^*     14. [skewness]
+!^*     15. [kurtosis] EXCESS kurtosis
+!^*     16. [all15]
+!^*     17.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     18.mess, error message
 !^**********************************************************************
 use numerix_dmsl_kit, only:getmean, getvar, getCV,getmoments
 
@@ -438,7 +438,7 @@ if( present(median) .or. present(all15) ) then
     call GetEmpiricalQuantile(p=0.5_mrk,x=x,ppFormula=ppFormula,q=Xmedian,err=err,mess=mess)
     if(err>0) then
         mess="EmpiricalStats_tools: "//trim(mess);return
-    endif    
+    endif
     if(present(median)) median=Xmedian
     if(present(all15)) all15(6)=Xmedian
 endif
@@ -447,7 +447,7 @@ if( present(LeftDecile) .or. present(all15) ) then
     call GetEmpiricalQuantile(p=0.1_mrk,x=x,ppFormula=ppFormula,q=XLeftDecile,err=err,mess=mess)
     if(err>0) then
         mess="EmpiricalStats_tools: "//trim(mess);return
-    endif    
+    endif
     if(present(LeftDecile)) LeftDecile=XLeftDecile
     if(present(all15)) all15(7)=XLeftDecile
 endif
@@ -456,7 +456,7 @@ if( present(LeftQuartile) .or. present(all15) ) then
     call GetEmpiricalQuantile(p=0.25_mrk,x=x,ppFormula=ppFormula,q=XLeftQuartile,err=err,mess=mess)
     if(err>0) then
         mess="EmpiricalStats_tools: "//trim(mess);return
-    endif    
+    endif
     if(present(LeftQuartile)) LeftQuartile=XLeftQuartile
     if(present(all15)) all15(8)=XLeftQuartile
 endif
@@ -465,7 +465,7 @@ if( present(RightQuartile) .or. present(all15) ) then
     call GetEmpiricalQuantile(p=0.75_mrk,x=x,ppFormula=ppFormula,q=XRightQuartile,err=err,mess=mess)
     if(err>0) then
         mess="EmpiricalStats_tools: "//trim(mess);return
-    endif    
+    endif
     if(present(RightQuartile)) RightQuartile=XRightQuartile
     if(present(all15)) all15(9)=XRightQuartile
 endif
@@ -474,7 +474,7 @@ if( present(RightDecile) .or. present(all15) ) then
     call GetEmpiricalQuantile(p=0.9_mrk,x=x,ppFormula=ppFormula,q=XRightDecile,err=err,mess=mess)
     if(err>0) then
         mess="EmpiricalStats_tools: "//trim(mess);return
-    endif    
+    endif
     if(present(RightDecile)) RightDecile=XRightDecile
     if(present(all15)) all15(10)=XRightDecile
 endif
@@ -506,7 +506,7 @@ if( present(skewness) .or. present(all15) ) then
         if(present(all15)) all15(14)=undefRN
         err=-10 ! turn into a warning message
         write(*,*) trim(mess)
-    else    
+    else
         if(present(skewness)) skewness=Xskewness
         if(present(all15)) all15(14)=Xskewness
     endif
@@ -521,7 +521,7 @@ if( present(kurtosis) .or. present(all15) ) then
         if(present(all15)) all15(15)=undefRN
         err=-10 ! turn into a warning message
         write(*,*) trim(mess)
-    else    
+    else
         if(present(kurtosis)) kurtosis=Xkurtosis
         if(present(all15)) all15(15)=Xkurtosis
     endif
@@ -545,15 +545,15 @@ subroutine KDE(kernelID,u,X,h,out,err,mess)
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1.[kernelID], default Gaussian
-!^*		2.u, value where estimate is sought
-!^*		3.X, data
-!^*		4.[h], smoothing parameter. Default value = Silverman's rule of
-!^*		       thumb, h = 1.06*std(X)*n^(-1/5)
+!^*     1.[kernelID], default Gaussian
+!^*     2.u, value where estimate is sought
+!^*     3.X, data
+!^*     4.[h], smoothing parameter. Default value = Silverman's rule of
+!^*            thumb, h = 1.06*std(X)*n^(-1/5)
 !^* OUT
-!^*		1.out, estimated pdf(u)
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1.out, estimated pdf(u)
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 
 character(*),intent(in),optional::kernelID
@@ -623,12 +623,12 @@ subroutine GetEmpiricalDistSummary(X,& ! data
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1.kernel
-!^*		2.u
+!^*     1.kernel
+!^*     2.u
 !^* OUT
-!^*		1.k (=kernel(u))
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1.k (=kernel(u))
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 use utilities_dmsl_kit, only:GetSpareUnit
 use numerix_dmsl_kit, only:quicksort
@@ -663,7 +663,7 @@ do i=1,n
     if(err/=0) then
         mess='GetEmpiricalDistSummary:'//trim(mess);return
     endif
-enddo    
+enddo
 if(present(sortedX)) sortedX=sX
 if(present(Epdf)) Epdf=pdf
 if(present(Ecdf)) Ecdf=cdf
@@ -702,8 +702,8 @@ subroutine Get4LMoments(x,LMOM,err,mess)
 !^**********************************************************************
 !^* Last modified: 07/04/2012
 !^**********************************************************************
-!^* Comments: Those 4 are sufficient to estimate the parameters of most 
-!^* distributions, at least those useful in hydro-applications 
+!^* Comments: Those 4 are sufficient to estimate the parameters of most
+!^* distributions, at least those useful in hydro-applications
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -711,11 +711,11 @@ subroutine Get4LMoments(x,LMOM,err,mess)
 !^* + properly distinguish L-moments and L-moment ratios
 !^**********************************************************************
 !^* IN
-!^*		1. x, sample used to compute L-MOM
+!^*     1. x, sample used to compute L-MOM
 !^* OUT
-!^*		1.LMOM, real vector of size 4
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1.LMOM, real vector of size 4
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 use numerix_dmsl_kit, only:quicksort
 real(mrk), intent(in)::x(:)
@@ -766,7 +766,7 @@ end subroutine Get4LMoments
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 elemental function p2T(p,p2TFactor,invertT)
 ! probability to return period transformation
-! note: p2Tfactor is optional,and corresponds to the average number of 
+! note: p2Tfactor is optional,and corresponds to the average number of
 !       data per year (for a return period in years) - default is 1
 ! p=1-1/(T*p2Tfactor),T=1/(1-p)*p2Tfactor
 ! if invertT is true, then p=1/(T*p2Tfactor),T=1/(p*p2Tfactor)
@@ -782,7 +782,7 @@ if(p>=1._mrk) then
     p2T=undefRN;return
 elseif(p<0._mrk) then
     p2T=-undefRN;return
-endif 
+endif
 if(present(p2TFactor)) then
     f=p2TFactor
 else
@@ -802,7 +802,7 @@ end function p2T
 
 elemental function T2p(T,p2TFactor,invertT)
 ! return period to probability transformation
-! note: p2Tfactor is optional,and corresponds to the average number of 
+! note: p2Tfactor is optional,and corresponds to the average number of
 !       data per year (for a return period in years) - default is 1
 ! p=1-1/(T*p2Tfactor),T=1/(1-p)*p2Tfactor
 ! if invertT is true, then p=1/(T*p2Tfactor),T=1/(p*p2Tfactor)
@@ -825,7 +825,7 @@ else
 endif
 if(T*f<1._mrk) then
     T2p=-undefRN;return
-endif 
+endif
 if(iT) then
     T2p=1._mrk/(T*f)
 else
@@ -841,18 +841,18 @@ Subroutine GetPearsonCorr(x,y,ro,err,mess)
 !^**********************************************************************
 !^* Last modified: 25/11/2013
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1. x,y, samples used to compute correlation
+!^*     1. x,y, samples used to compute correlation
 !^* OUT
-!^*		1.ro, correlation
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1.ro, correlation
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 real(mrk),intent(in)::x(:),y(:)
 real(mrk),intent(out)::ro
@@ -876,7 +876,7 @@ if(sy==0._mrk) then
     err=1;mess='GetPearsonCorr:FATAL:std[y]==0';return;
 endif
 ro=dot_product(x-mx,y-my)/(real(size(x),mrk)*sx*sy)
-               
+
 end Subroutine GetPearsonCorr
 
 !!!!!!!!!!!
@@ -899,12 +899,12 @@ pure subroutine kernelfunk(kernelID,u,k,err,mess)
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1.kernel
-!^*		2.u
+!^*     1.kernel
+!^*     2.u
 !^* OUT
-!^*		1.k (=kernel(u))
-!^*		2.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		3.mess, error message
+!^*     1.k (=kernel(u))
+!^*     2.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*     3.mess, error message
 !^**********************************************************************
 use utilities_dmsl_kit, only:pi
 

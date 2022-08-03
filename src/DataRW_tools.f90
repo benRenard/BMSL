@@ -2088,7 +2088,7 @@ subroutine ReadRasterASC(file,gridOnly,grid,M,err,mess)
 !^*    2.[gridOnly], only read grid properties? default .false.
 !^* OUT
 !^*    1.grid, grid definition (rasterGrid object)
-!^*    2.M, data matrix
+!^*    2.[M], data matrix
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    4.mess, error message
 !^**********************************************************************
@@ -2096,7 +2096,7 @@ use utilities_dmsl_kit, only:number_string
 character(*), intent(in)::file
 logical, optional, intent(in)::gridOnly
 type(rasterGridType), intent(out)::grid
-real(mrk), pointer::M(:,:)
+real(mrk), allocatable, intent(out), optional::M(:,:)
 integer(mik), intent(out)::err
 character(*),intent(out)::mess
 !locals
@@ -2129,7 +2129,11 @@ read(unt,*,iostat=err) txt,grid%mv
 if(err>0) then;mess=trim(procname)//':problem reading NODATA_value';close(unt);return;endif
 
 if(.not.gOnly) then
-    if(associated(M)) nullify(M);allocate(M(grid%nrows,grid%ncols))
+    if(.not.present(M)) then
+        mess=trim(procname)//':M should be present unless gridOnly=.true.'
+        err=1;return
+    endif
+    allocate(M(grid%nrows,grid%ncols))
     do j=1, grid%nrows
         read(unt,*,iostat=err) M(j,:)
         if(err>0) then
@@ -2182,9 +2186,8 @@ err=0;mess=''
 
 ! Check M format
 if( size(M,dim=1)/=grid%nrows .or. size(M,dim=2)/=grid%ncols ) then
-    err=1
-    mess=trim(procname)//'M dimension incompatible with grid'
-    return
+    mess=trim(procname)//':M dimension incompatible with grid'
+    err=1;return
 endif
 
 call getSpareUnit(unt,err,mess)

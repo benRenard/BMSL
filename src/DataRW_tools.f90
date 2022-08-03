@@ -2,13 +2,13 @@ module DataRW_tools
 
 !~**********************************************************************
 !~* Purpose: Read/Write various data format encountered here and there...
-!~* After reading, put the data in a variable of type TimeSeries - 
-!~* module TimeSeries_tools is therefore needed 
+!~* Many subs read/write time series and use type TimeSeries -
+!~* module TimeSeries_tools is therefore needed
 !~**********************************************************************
 !~* Programmer: Ben Renard, Cemagref Lyon
 !~*             Antoine Bard, Cemagref Lyon.
 !~**********************************************************************
-!~* Last modified: 18/06/2013
+!~* Last modified: 03/08/2022
 !~**********************************************************************
 !~* Comments:
 !~**********************************************************************
@@ -18,30 +18,42 @@ module DataRW_tools
 !~**********************************************************************
 !~* Quick description of public procedures:
 !~*    1.ReadSQR: SQR format (MF)
-!~*    2.ReadMF: Daily rainfall (MF)
-!~*    3.ReadDTG_R: Daily Rainfall (EDF-DTG)
-!~*    4.ReadDTG_Q: Daily Runoff (EDF-DTG)
+!~*    2.ReadDTG_R: Daily Rainfall (EDF-DTG)
+!~*    3.ReadDTG_Q: Daily Runoff (EDF-DTG)
+!~*    4.ReadMF: Daily rainfall (MF)
 !~*    5.ReadHYDROII: Daily Runoff (HYDRO II)
-!~*    6.ExtraRead: Daily Data, either P or Q (EXTRAFLO format)
-!~*    7.ExtraWrite: Daily Data, either P or Q (EXTRAFLO format)
-!~*    8.DTSRead: Daily Data
-!~*    9.DTSWrite: Daily Data
-!~*    10.DatWrite: Data matrix
-!~*    11.DatRead: Data matrix
-!~*    12.HodgkinsWrite: csv-like format requested by Glenn Hodgkins
-!~*    13.ReadRHN: read in RHN format as defined by Paul Whitfield
-!~*    14.ReadMalekiFormat: read in Maleki's format
-!~*    14.ReadXceedances_GlennFormat
+!~*    6.ReadDLY: Daily rainfall (GHCN dataset - NOAA)
+!~*    7.ReadOz: Daily rainfall (OZ format, SEQ dataset)
+!~*    8.ExtraRead: Daily Data, either P or Q (EXTRAFLO format)
+!~*    9.ExtraWrite: Daily Data, either P or Q (EXTRAFLO format)
+!~*    10.DTSRead: Daily Data (DTS format, used in e.g. JBay)
+!~*    11.DTSWrite: Daily Data (DTS format, used in e.g. JBay)
+!~*    12.ReadSeparatedFile: csv-like format
+!~*    13.WriteSeparatedFile: csv-like format
+!~*    14.DatWrite: Data matrix
+!~*    15.DatRead: Data matrix
+!~*    16.HodgkinsWrite: csv-like format requested by Glenn Hodgkins
+!~*    17.AdaptAlpRead: AdaptAlp format
+!~*    18.ReadRHN: RHN format as defined by Paul Whitfield
+!~*    19.ReadRHN4: RHN4 format as defined by Paul Whitfield
+!~*    20.ReadMalekiFormat: Maleki Badjana's format
+!~*    21.ReadXceedances_GlennFormat: matrix of exceedances as defined by Glenn Hodgkins
+!~*    22.LoadFromRepository: Read a bunch of time series datafiles from a repository
+!~*    23.ReadRasterASC: Raster ASC format
+!~*    24.WriteRasterASC: Raster ASC format
 !~**********************************************************************
 
 use kinds_dmsl_kit ! numeric kind definitions from DMSL
+use utilities_dmsl_kit,only:getSpareUnit
 use TimeSeries_tools
+use Geodesy_tools,only:rasterGridType
 
 implicit none
 Private
-public ::ReadSQR,ExtraWrite,ReadDTG_R, ReadDTG_Q, ReadMF, ExtraRead, ReadHYDROII,ReadDLY,&
-         DTSWrite, DTSRead, DatWrite,DatRead,HodgkinsWrite,AdaptAlpRead,ReadOz,ReadRHN,ReadRHN4,ReadMalekiFormat,&
-         ReadXceedances_GlennFormat,LoadFromRepository,ReadSeparatedFile,WriteSeparatedFile
+public ::ReadSQR, ReadDTG_R, ReadDTG_Q, ReadMF, ReadHYDROII, ReadDLY, ReadOz, ExtraRead, ExtraWrite, &
+         DTSWrite, DTSRead, ReadSeparatedFile,WriteSeparatedFile, DatWrite, DatRead, HodgkinsWrite,&
+         AdaptAlpRead, ReadRHN, ReadRHN4, ReadMalekiFormat, ReadXceedances_GlennFormat,LoadFromRepository,&
+         ReadRasterASC, WriteRasterASC
 
 type, public:: MetadataType
     integer(mik) :: X=-99,Y=-99,Z=-99
@@ -275,6 +287,7 @@ Qcode%ts(:)%date=y%ts(:)%date
 close(1)
 
 end subroutine ReadDTG_R
+
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine ReadDTG_Q(file,y,Qcode,metadata,err,mess)
 
@@ -631,8 +644,8 @@ subroutine ReadDLY(file,ReadWhat,y,Qcode,metadata,err,mess)
 !^**********************************************************************
 !^* Last modified: 04/02/2013
 !^**********************************************************************
-!^* Comments: Qcode not handled properly yet - conservative approach 
-!^* forcing a mv if any flag is nontrivial. But output Qcode is junk 
+!^* Comments: Qcode not handled properly yet - conservative approach
+!^* forcing a mv if any flag is nontrivial. But output Qcode is junk
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -1275,6 +1288,7 @@ do i=1,Nrow
 enddo
 close(unt)
 end subroutine WriteSeparatedFile_r
+
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine WriteSeparatedFile_i(file,sep,y,headers,append,err,mess)
 !^**********************************************************************
@@ -1340,6 +1354,7 @@ do i=1,Nrow
 enddo
 close(unt)
 end subroutine WriteSeparatedFile_i
+
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine DatWrite(y,file,headers,err,mess)
 
@@ -1539,7 +1554,7 @@ do i=1,y%n
         flag=1
     else
         flag=0
-    endif        
+    endif
     !write(1,100) 'HYDRO',trim(ID),trim(fdate),y%ts(i)%q,flag
     write(1,100) 'HYDRO',trim(ID),y%ts(i)%date%day,y%ts(i)%date%month,&
                 y%ts(i)%date%year,y%ts(i)%q,flag
@@ -1586,7 +1601,7 @@ OPEN(1,status='OLD',FILE=trim(file), IOSTAT=errcode, ERR=99)
 read(1,'(a80)')
 read(1,'(a80)')
 read(1,'(a80)')
-!get data dimention 
+!get data dimention
 do while((errcode==0))
 read(1,*,iostat=errcode)
 n=n+1
@@ -1704,7 +1719,6 @@ close(1)
 end subroutine ReadRHN
 
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 subroutine ReadRHN4(file,y,Qcode,err,mess)
 
 !^**********************************************************************
@@ -1862,16 +1876,16 @@ do j=1,y%n
     np2=index(cdate(np1+1:), '.')
     read(cdate((np1+1):(np1+np2-1)),*) y%ts(j)%date%month
     read(cdate((np1+np2+1):),*) y%ts(j)%date%year
-    
+
     if( (trim(cvalue)=='') .or. (trim(cvalue)==char(9))) then
         y%ts(j)%q=y%mv
     else
         read(cvalue,*) y%ts(j)%q
     endif
-            
-    
+
+
     !    read(line((np1+1):), '(A)') cvalue
-    
+
 !
 !    !check for daily mean discharge code= QJO
 !    read(line(1:3), '(A3)') code
@@ -1904,7 +1918,7 @@ end subroutine ReadMalekiFormat
 subroutine ReadXceedances_GlennFormat(file,M,k,n,StationList,YearList,err,mess)
 
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose: read matrix of exceedances as defined by Glenn Hodgkins
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea Lyon
 !^**********************************************************************
@@ -1922,8 +1936,8 @@ subroutine ReadXceedances_GlennFormat(file,M,k,n,StationList,YearList,err,mess)
 !^*    1.M, 0/1 matrix (missing = -99)
 !^*    2.k, time series of number of successes
 !^*    3.n, time series of number of trials
-!^*    4.StationList, 
-!^*    5.YearList, 
+!^*    4.StationList,
+!^*    5.YearList,
 !^*    6.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    7.mess, error message
 !^**********************************************************************
@@ -1973,7 +1987,7 @@ do i=1,Nt
         case('NA');M(i,j)=mvcode
         case default
             err=1;mess='ReadXceedances_GlennFormat:fatal:unrecognized item';return
-        end select        
+        end select
     enddo
     n(i)=count(M(i,:)>=0)
     k(i)=count(M(i,:)==1)
@@ -1981,6 +1995,7 @@ enddo
 close(1)
 
 end subroutine ReadXceedances_GlennFormat
+
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine LoadFromRepository(Repo,StationListFile,Extension,ReadSub,y,Qcode,err,mess)
 
@@ -2003,7 +2018,7 @@ subroutine LoadFromRepository(Repo,StationListFile,Extension,ReadSub,y,Qcode,err
 !^*    1.Extension, extension to add to all files
 !^*    1.ReadSub, reading subroutine - see interface below
 !^* OUT
-!^*    1.y, vector of time series containing data [dim: number of files in StationListFile] 
+!^*    1.y, vector of time series containing data [dim: number of files in StationListFile]
 !^*    2.Qcode, vector of quality code time series
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    4.mess, error message
@@ -2052,5 +2067,156 @@ enddo
 
 end subroutine LoadFromRepository
 
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+subroutine ReadRasterASC(file,gridOnly,grid,M,err,mess)
+
+!^**********************************************************************
+!^* Purpose: read Raster grid in ASC format
+!^**********************************************************************
+!^* Programmer: Ben Renard, INRAE Aix
+!^**********************************************************************
+!^* Last modified: 03/08/2022
+!^**********************************************************************
+!^* Comments:
+!^**********************************************************************
+!^* References:
+!^**********************************************************************
+!^* 2Do List:
+!^**********************************************************************
+!^* IN
+!^*    1.file, address of data file
+!^*    2.[gridOnly], only read grid properties? default .false.
+!^* OUT
+!^*    1.grid, grid definition (rasterGrid object)
+!^*    2.M, data matrix
+!^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*    4.mess, error message
+!^**********************************************************************
+use utilities_dmsl_kit, only:number_string
+character(*), intent(in)::file
+logical, optional, intent(in)::gridOnly
+type(rasterGridType), intent(out)::grid
+real(mrk), pointer::M(:,:)
+integer(mik), intent(out)::err
+character(*),intent(out)::mess
+!locals
+character(250),parameter::procname='ReadRasterASC'
+integer(mik)::unt,j
+character(250)::txt
+logical::gOnly
+
+err=0;mess=''
+
+if(present(gridOnly)) then;gOnly=gridOnly;else;gOnly=.false.;endif
+
+call getSpareUnit(unt,err,mess)
+if(err>0) then;mess=trim(procname)//':'//trim(mess);return;endif
+open(unit=unt,file=trim(file), status='old', iostat=err)
+if(err>0) then;mess=trim(procname)//':problem opening file: '//trim(file);return;endif
+
+! Read grid properties
+read(unt,*,iostat=err) txt,grid%ncols
+if(err>0) then;mess=trim(procname)//':problem reading ncols';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%nrows
+if(err>0) then;mess=trim(procname)//':problem reading nrows';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%xllcorner
+if(err>0) then;mess=trim(procname)//':problem reading xllcorner';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%yllcorner
+if(err>0) then;mess=trim(procname)//':problem reading yllcorner';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%cellsize
+if(err>0) then;mess=trim(procname)//':problem reading cellsize';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%mv
+if(err>0) then;mess=trim(procname)//':problem reading NODATA_value';close(unt);return;endif
+
+if(.not.gOnly) then
+    if(associated(M)) nullify(M);allocate(M(grid%nrows,grid%ncols))
+    do j=1, grid%nrows
+        read(unt,*,iostat=err) M(j,:)
+        if(err>0) then
+            mess=trim(procname)//':problem reading data at row:'//trim(number_string(j))
+            close(unt);return
+        endif
+    enddo
+endif
+
+close(unt)
+
+end subroutine ReadRasterASC
+
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+subroutine WriteRasterASC(grid,M,file,err,mess)
+
+!^**********************************************************************
+!^* Purpose: write Raster grid in ASC format
+!^**********************************************************************
+!^* Programmer: Ben Renard, INRAE Aix
+!^**********************************************************************
+!^* Last modified: 03/08/2022
+!^**********************************************************************
+!^* Comments:
+!^**********************************************************************
+!^* References:
+!^**********************************************************************
+!^* 2Do List:
+!^**********************************************************************
+!^* IN
+!^*    1. grid, grid definition (rasterGrid object)
+!^*    2. M, data matrix
+!^*    3. file, address of data file
+!^* OUT
+!^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*    4.mess, error message
+!^**********************************************************************
+use utilities_dmsl_kit, only:number_string
+type(rasterGridType), intent(in)::grid
+real(mrk), intent(in)::M(:,:)
+character(*), intent(in)::file
+integer(mik), intent(out)::err
+character(*),intent(out)::mess
+!locals
+character(250),parameter::procname='WriteRasterASC'
+integer(mik)::unt,j
+character(250)::fmat
+
+err=0;mess=''
+
+! Check M format
+if( size(M,dim=1)/=grid%nrows .or. size(M,dim=2)/=grid%ncols ) then
+    err=1
+    mess=trim(procname)//'M dimension incompatible with grid'
+    return
+endif
+
+call getSpareUnit(unt,err,mess)
+if(err>0) then;mess=trim(procname)//':'//trim(mess);return;endif
+open(unit=unt,file=trim(file), status='old', iostat=err)
+if(err>0) then;mess=trim(procname)//':problem opening file: '//trim(file);return;endif
+
+! write grid properties
+write(unt,'(G0,4X,I0)',iostat=err) adjustl('ncols'),grid%ncols
+if(err>0) then;mess=trim(procname)//':problem writing ncols';close(unt);return;endif
+write(unt,'(G0,4X,I0)',iostat=err) 'nrows',grid%nrows
+if(err>0) then;mess=trim(procname)//':problem writing nrows';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'xllcorner',grid%xllcorner
+if(err>0) then;mess=trim(procname)//':problem writing xllcorner';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'yllcorner',grid%yllcorner
+if(err>0) then;mess=trim(procname)//':problem writing yllcorner';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'cellsize',grid%cellsize
+if(err>0) then;mess=trim(procname)//':problem writing cellsize';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'NODATA_value',grid%mv
+if(err>0) then;mess=trim(procname)//':problem writing NODATA_value';close(unt);return;endif
+
+fmat="("//trim(number_string(grid%ncols))//"e16.8)"
+do j=1, grid%nrows
+    write(unt,fmat,iostat=err) M(j,:)
+    if(err>0) then
+        mess=trim(procname)//':problem writing data at row:'//trim(number_string(j))
+        close(unt);return
+    endif
+enddo
+
+close(unt)
+
+end subroutine WriteRasterASC
 
 end module DataRW_tools

@@ -433,7 +433,7 @@ case('inversedistance','inversedistanceweighting','idw')
     allocate(sumDist(grid%nrows,grid%ncols))
     smallDist=grid%cellsize/1000000._mrk
     do i=1,n
-        call GetDistance(formula='euclidean',pt1=pts(i,:),grid=grid,&
+        call GetDistance(formula='euclidean',pt1=pts(i,1:2),grid=grid,&
                          D=distances(:,:,i),err=err,mess=mess)
         if(err>0) then;mess=trim(procname)//':'//trim(mess);return;endif
         where(distances(:,:,i)<=0._mrk) distances(:,:,i)=smallDist

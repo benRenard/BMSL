@@ -561,7 +561,7 @@ real(mrk), intent(in)::u, X(:)
 real(mrk), intent(in),optional::h
 real(mrk), intent(out)::out
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 !locals
 real(mrk)::smooth,std,k(size(X))
 integer(mik)::n,i

@@ -76,7 +76,7 @@ Type(PriorListType), intent(in)::PriorList(:)
 real(mrk), intent(out)::lp
 logical, intent(out)::feas,isnull
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 !locals
 integer(mik)::n,i,npar
 real(mrk), allocatable::pdf(:)
@@ -130,7 +130,7 @@ do i=1,n
         mess='GetLogPrior:'//trim(mess)
         feas=.false.;return
     endif
-    if(.not. feas) then 
+    if(.not. feas) then
         !err=1;mess="GetLogPrior:FATAL:unfeasible [PriorList(i)%par]"
         return
     endif
@@ -182,7 +182,7 @@ type(covariate), intent(in), optional::cov(:)
 real(mrk), intent(out)::lp
 logical, intent(out)::feas,isnull
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 !locals
 integer(mik):: npar
 real(mrk)::prior, lkh
@@ -299,7 +299,7 @@ subroutine Bayes_EstimPar(X,distID,mv,PriorList,cov,& ! Data & Model
 !^**********************************************************************
 !^* Last modified:08/07/2010
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -339,7 +339,7 @@ real(mrk), intent(inout)::start(:), startStd(:)
 Character(*), intent(in)::distID
 Type(PriorListType), intent(in)::PriorList(:)
 type(covariate), intent(in), optional::cov(:)
-integer(mik), intent(in)::nAdapt,nCycles                
+integer(mik), intent(in)::nAdapt,nCycles
 character(*), intent(in)::OutFile
 character(*), intent(in),optional::headers(:)
 integer(mik), intent(out)::err
@@ -361,7 +361,7 @@ if(n==0) then
     err=1;mess='Bayes_EstimPar:FATAL: no non-missing values!';return
 endif
 
-! populate global variables 
+! populate global variables
 if(allocated(Xdata)) deallocate(Xdata)
 allocate(Xdata(n))
 Xdata=pack(X,mvlist)
@@ -446,7 +446,7 @@ err=0;mess=''
 if(IsCovNeeded(Xdist)) then ! Warn but try to go anyway!
    err=-1;
    mess="Bayes_Predictive:WARNING:Dist needing covariates not yet &
-        &propely handled by this subroutine" 
+        &propely handled by this subroutine"
    write(*,*) trim(mess)
    !;return
 endif
@@ -603,7 +603,7 @@ subroutine GetMCMCSummary(mcmc,LogPost,OutFile,parnames,&
                           err,mess)
 
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea LYON
 !^**********************************************************************
@@ -729,7 +729,7 @@ subroutine GetModalEstimates(mcmc,LogPost,distID,&
                           level,err,mess)
 
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea LYON
 !^**********************************************************************
@@ -841,7 +841,7 @@ subroutine GetPredictiveEstimates(pred,&
                           err,mess)
 
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea LYON
 !^**********************************************************************
@@ -972,7 +972,7 @@ subroutine CreateFlatPriorList(npar,PriorList,err,mess)
 !^**********************************************************************
 !^* Last modified:19/09/2013
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************

@@ -70,7 +70,7 @@ character(*), intent(in),optional::OutFile,MonitorFile,headers(:)
 real(mrk),intent(out)::fx
 real(mrk),intent(out),optional::fAux(:)
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 !locals
 logical::feas,isnull,again
 character(100), allocatable::head(:), fAuxHead(:)
@@ -248,7 +248,7 @@ character(*), intent(in),optional::OutFile,MonitorFile,headers(:)
 real(mrk),intent(out)::fx
 real(mrk),intent(out),optional::fAux(:)
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 !locals
 logical::feas,isnull,again
 character(100), allocatable::head(:), fAuxHead(:)

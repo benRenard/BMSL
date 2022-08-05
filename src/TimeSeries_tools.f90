@@ -30,7 +30,7 @@ public :: & ! Aggregation
             TSFiltering_daily, FillTheGap_daily,&
             ! misc. utilities
             GetValueFromDate,SetValueToDate,ExtractOneDTimeSeries,GatherMultiDTimeSeries,&
-            GatherMultiDTimeSeries_Matrix          
+            GatherMultiDTimeSeries_Matrix
 
 integer(mik), parameter, PUBLIC:: & ! Defines names of the filters
             MovingAverage=1, MovingMin=2, MovingMax=3,&
@@ -102,15 +102,15 @@ subroutine TSAggregate_preprocess(TSin,scale,scaleMult,&
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
-!^* 2Do List: 
+!^* 2Do List:
 !^**********************************************************************
 !^* IN
 !^*    1. TSin, input time series
 !^*    2. scale of the grid (one of YMDhms)
 !^*    3. [scaleMult] (e.g. for 15 minutes step, scaleMult = 15, scale = 'm')
-!^*    4. [DateListOption] 
-!^*    5. [FirstDate] beginning of the grid; is absent set to first date in TSin 
-!^*    6. [LastDate] end of the grid; is absent set to last date in TSin 
+!^*    4. [DateListOption]
+!^*    5. [FirstDate] beginning of the grid; is absent set to first date in TSin
+!^*    6. [LastDate] end of the grid; is absent set to last date in TSin
 !^* OUT
 !^*    1. x, dates of the time series in absolute time
 !^*    2. y, values of the time series
@@ -147,7 +147,7 @@ call DateList(d0,dn,scale,scaleMult,list,err,message)
 if(err/=EXIT_SUCCESS)then;message='f-'//procnam//'&'//trim(message);return;endif
 ngrid=size(list)
 ! fill in output arrays
-allocate(x(n),y(n),qc(n),cc(n),grid(ngrid)) 
+allocate(x(n),y(n),qc(n),cc(n),grid(ngrid))
 x=AbsoluteTime(TSin%ts(:)%date,DateListOption,d0)
 y=TSin%ts(:)%q
 do i=1,n
@@ -174,18 +174,18 @@ subroutine TSAggregate_engine(operateur,opID,TSin,scale,scaleMult,&
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
-!^* 2Do List: handle vectorial operators 
+!^* 2Do List: handle vectorial operators
 !^**********************************************************************
 !^* IN
-!^*    1. operateur, interface to the operator to be applied 
+!^*    1. operateur, interface to the operator to be applied
 !^*    2. opID, properties of the operator
 !^*    3. TSin, input time series
 !^*    4. scale of the grid (one of YMDhms)
 !^*    5. [scaleMult] (e.g. for 15 minutes step, scaleMult = 15, scale = 'm')
 !^*    6. [aux] auxiliaries of the operator
-!^*    7. [DateListOption] 
-!^*    8. [FirstDate] beginning of the grid; is absent set to first date in TSin 
-!^*    9. [LastDate] end of the grid; is absent set to last date in TSin 
+!^*    7. [DateListOption]
+!^*    8. [FirstDate] beginning of the grid; is absent set to first date in TSin
+!^*    9. [LastDate] end of the grid; is absent set to last date in TSin
 !^* OUT
 !^*    1. TSout, output aggregated time series
 !^*    2. [tx], dates of the time series in absolute time
@@ -221,7 +221,7 @@ type(DateType), intent(in), optional::FirstDate,LastDate
 type(OneDTimeSeriesType), intent(out)::TSout
 real(mrk),pointer,optional::tgrid(:),tx(:)
 integer(mik), intent(out)::err
-character(100),intent(out)::message
+character(*),intent(out)::message
 ! locals
 integer(mik), parameter::opDim=1 ! hard-coded dimensionality of the operator - need to think how to handle it properly
 character(*),parameter::procnam='TSAggregate_engine'
@@ -238,7 +238,7 @@ if(present(FirstDate)) then; d0=FirstDate; else; d0=TSin%ts(1)%date; endif
 call TSAggregate_preprocess(TSin,scale,scaleMult,DateListOption,FirstDate,LastDate,&
                        x,y,qc,cc,grid,err,message)
 if(err/=EXIT_SUCCESS)then;message='f-'//procnam//'&'//trim(message);return;endif
-! return continuous-time tx and tgrid if requested  
+! return continuous-time tx and tgrid if requested
 if(present(tx)) then;allocate(tx(TSin%n));tx=x;endif;
 if(present(tgrid)) then;allocate(tgrid(size(grid)));tgrid=grid;endif;
 ! Aggregate
@@ -277,19 +277,19 @@ subroutine TSAggregate_ez(operateur,qcOption,ccOption,TSin,scale,scaleMult,&
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
-!^* 2Do List: handle vectorial operators 
+!^* 2Do List: handle vectorial operators
 !^**********************************************************************
 !^* IN
-!^*    1. operateur, as a string! 
+!^*    1. operateur, as a string!
 !^*    2. [qcOption] - see Aggregation_tools
 !^*    3. [ccOption] - see Aggregation_tools
 !^*    4. TSin, input time series
 !^*    5. scale of the grid (one of YMDhms)
 !^*    6. [scaleMult] (e.g. for 15 minutes step, scaleMult = 15, scale = 'm')
 !^*    7. [aux] auxiliaries of the operator
-!^*    8. [DateListOption] 
-!^*    9. [FirstDate] beginning of the grid; is absent set to first date in TSin 
-!^*    10. [LastDate] end of the grid; is absent set to last date in TSin 
+!^*    8. [DateListOption]
+!^*    9. [FirstDate] beginning of the grid; is absent set to first date in TSin
+!^*    10. [LastDate] end of the grid; is absent set to last date in TSin
 !^* OUT
 !^*    1. TSout, output aggregated time series
 !^*    2. [tx], dates of the time series in absolute time
@@ -312,7 +312,7 @@ type(DateType), intent(in), optional::FirstDate,LastDate
 type(OneDTimeSeriesType), intent(out)::TSout
 real(mrk),pointer,optional::tgrid(:),tx(:)
 integer(mik), intent(out)::err
-character(100),intent(out)::message
+character(*),intent(out)::message
 ! locals
 character(*),parameter::procnam='TSAggregate_ez'
 integer(mik), parameter::interpol=LINEAR_interpol
@@ -346,18 +346,18 @@ end subroutine TSAggregate_ez
 subroutine Hourly2Daily(xin,DayStart,h2dFunk,xout,pmv,err,mess)
 
 !^**********************************************************************
-!^* Purpose: transform an hourly TS into a daily one, by summing OR 
+!^* Purpose: transform an hourly TS into a daily one, by summing OR
 !^*          averaging OR MAXing OR MINing hourly values
 !^**********************************************************************
 !^* Programmer: Ben Renard, Cemagref Lyon
 !^**********************************************************************
 !^* Last modified: 28/07/2011
 !^**********************************************************************
-!^* Comments: By convention, the day containing hours from  
+!^* Comments: By convention, the day containing hours from
 !^*           (day j, hour DayStart) to (day j+1, hour DayStart-1)
 !^*           is day j in the daily time series.
-!^*           Be careful with missing values: this sub will compute the 
-!^*           daily mean/sum/max/min even if there is a single hourly 
+!^*           Be careful with missing values: this sub will compute the
+!^*           daily mean/sum/max/min even if there is a single hourly
 !^*           value within the day! It's your responsability to decide
 !^*           what to do with missing value, using pmv
 !^**********************************************************************
@@ -372,7 +372,7 @@ subroutine Hourly2Daily(xin,DayStart,h2dFunk,xout,pmv,err,mess)
 !^*       to daily? default 'mean', available 'sum', 'max', 'min'
 !^* OUT
 !^*    1.xout, daily time series
-!^*    2.pmv, daily time series containing the percentage of missing 
+!^*    2.pmv, daily time series containing the percentage of missing
 !^*           values within each day
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    4.mess, error message
@@ -438,7 +438,7 @@ do i=1,nD
                     year=currentday%year)
     mask2=(xin%ts(compt:up)%q/=xin%mv)
     ndata=count(mask1.and.mask2)
-    
+
     if(ndata==0) then ! no data this day
         pmv%ts(i)%q=100._mrk
         xout%ts(i)%q=xout%mv
@@ -457,11 +457,11 @@ do i=1,nD
         selectcase(h2d)
         case('mean') !default
             xout%ts(i)%q=sum(QJ%ts(:)%q)/ndata
-        case('sum') 
+        case('sum')
             xout%ts(i)%q=sum(QJ%ts(:)%q)
-        case('min') 
+        case('min')
             xout%ts(i)%q=minval(QJ%ts(:)%q)
-        case('max') 
+        case('max')
             xout%ts(i)%q=maxval(QJ%ts(:)%q)
         case default
             err=1;mess='Hourly2Daily:FATAL:Unavailable [h2dFunk]';return
@@ -476,15 +476,15 @@ end subroutine Hourly2Daily
 subroutine Daily2Monthly(xin,d2mFunk,xout,pmv,err,mess)
 
 !^**********************************************************************
-!^* Purpose: transform an daily TS into a monthly one, by summing OR 
+!^* Purpose: transform an daily TS into a monthly one, by summing OR
 !^*          averaging OR MAXing OR MINing daily values
 !^**********************************************************************
 !^* Programmer: Ben Renard, Cemagref Lyon
 !^**********************************************************************
 !^* Last modified: 28/07/2011
 !^**********************************************************************
-!^* Comments: Be careful with missing values: this sub will compute the 
-!^*           monthly mean/sum/max/min even if there is a single daily 
+!^* Comments: Be careful with missing values: this sub will compute the
+!^*           monthly mean/sum/max/min even if there is a single daily
 !^*           value within the month! It's your responsability to decide
 !^*           what to do with missing value, using pmv
 !^**********************************************************************
@@ -498,7 +498,7 @@ subroutine Daily2Monthly(xin,d2mFunk,xout,pmv,err,mess)
 !^*       to monthly? default 'mean', available 'sum', 'max', 'min'
 !^* OUT
 !^*    1.xout, daily time series
-!^*    2.pmv, daily time series containing the percentage of missing 
+!^*    2.pmv, daily time series containing the percentage of missing
 !^*           values within each day
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    4.mess, error message
@@ -560,7 +560,7 @@ do i=1,nM
     !                year=currentday%year)
     mask2=(xin%ts(compt:up)%q/=xin%mv)
     ndata=count(mask1.and.mask2)
-    
+
     if(ndata==0) then ! no data this month
         pmv%ts(i)%q=100._mrk
         xout%ts(i)%q=xout%mv
@@ -572,11 +572,11 @@ do i=1,nM
         selectcase(d2m)
         case('mean') !default
             xout%ts(i)%q=sum(QM%ts(:)%q)/ndata
-        case('sum') 
+        case('sum')
             xout%ts(i)%q=sum(QM%ts(:)%q)
-        case('min') 
+        case('min')
             xout%ts(i)%q=minval(QM%ts(:)%q)
-        case('max') 
+        case('max')
             xout%ts(i)%q=maxval(QM%ts(:)%q)
         case default
             err=1;mess='Daily2monthly:FATAL:Unavailable [d2mFunk]';return
@@ -595,13 +595,13 @@ end subroutine Daily2Monthly
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine GetMonthlyClimato(X,month,dates,mu,std,err,mess)
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea Lyon / Started @ Columbia University
 !^**********************************************************************
 !^* Last modified:12/11/2012
 !^**********************************************************************
-!^* Comments:  
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -612,8 +612,8 @@ subroutine GetMonthlyClimato(X,month,dates,mu,std,err,mess)
 !^*    2. month
 !^*    3. dates
 !^* OUT
-!^*    1. mu, monthly means 
-!^*    2. std, monthly std 
+!^*    1. mu, monthly means
+!^*    2. std, monthly std
 !^*    3. err
 !^*    4. mess
 !^**********************************************************************
@@ -644,13 +644,13 @@ end subroutine GetMonthlyClimato
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine RemoveMonthlyClimato(X,dates,err,mess)
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea Lyon / Started @ Columbia University
 !^**********************************************************************
 !^* Last modified:12/11/2012
 !^**********************************************************************
-!^* Comments:  
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -686,13 +686,13 @@ end subroutine RemoveMonthlyClimato
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine GetMonthlyStat(XIN,datesIN,stat,XOUT,datesOUT,err,mess)
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea Lyon / Started @ Columbia University
 !^**********************************************************************
 !^* Last modified:12/11/2012
 !^**********************************************************************
-!^* Comments:  
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -762,17 +762,17 @@ do i=datesIN(1)%year,datesIN(n)%year
     enddo
 enddo
 
-end subroutine GetMonthlyStat 
+end subroutine GetMonthlyStat
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine GetSeasonStat(XIN,datesIN,stat,SeasonStart,SeasonEnd,IsMonthly,XOUT,datesOUT,err,mess)
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
 !^* Programmer: Ben Renard, Irstea Lyon / Started @ Columbia University
 !^**********************************************************************
 !^* Last modified:12/11/2012
 !^**********************************************************************
-!^* Comments:  
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -850,17 +850,17 @@ do i=datesIN(1)%year,datesIN(n)%year
     endif
 enddo
 
-end subroutine GetSeasonStat 
+end subroutine GetSeasonStat
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine GetMonthlyInterannualStat(y,stat,out,err,mess)
 !^**********************************************************************
-!^* Purpose: 
+!^* Purpose:
 !^**********************************************************************
-!^* Programmer: Ben Renard, Irstea Lyon 
+!^* Programmer: Ben Renard, Irstea Lyon
 !^**********************************************************************
 !^* Last modified: 18/06/2013
 !^**********************************************************************
-!^* Comments:  
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -904,7 +904,7 @@ if(trim(stat)=='WhereAmax') then !extract annual maxima
             mloc=maxloc(y%ts(:)%q,mask)
             monthofmax=y%ts(mloc(1))%date%month
             MaxCount(monthofmax)=MaxCount(monthofmax)+1
-        endif        
+        endif
     enddo
 endif
 
@@ -974,7 +974,7 @@ real(mrk), intent(in), optional::param(:)
 type(OneDTimeSeriesType), intent(in)::xin
 type(OneDTimeSeriesType), intent(out)::xout
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 
 err=0;mess='';
 if(associated(xout%ts)) nullify(xout%ts)
@@ -1072,7 +1072,7 @@ use Dates_tools, only: DaysBetween,DailyList, operator(==)
 type(OneDTimeSeriesType), intent(in)::xin
 type(OneDTimeSeriesType), intent(out)::xout
 integer(mik), intent(out)::err
-character(100),intent(out)::mess
+character(*),intent(out)::mess
 !locals
 integer(mik)::n,i,k
 
@@ -1112,7 +1112,7 @@ subroutine GetValueFromDate(xin,date,val,DateFound,err,mess)
 !^**********************************************************************
 !^* Last modified: 05/09/2012
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -1169,7 +1169,7 @@ subroutine SetValueToDate(xin,date,val,DateFound,err,mess)
 !^**********************************************************************
 !^* Last modified: 20/02/2017
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -1177,7 +1177,7 @@ subroutine SetValueToDate(xin,date,val,DateFound,err,mess)
 !^**********************************************************************
 !^* IN
 !^*    1. date
-!^*    2.val, value 
+!^*    2.val, value
 !^* OUT
 !^*    2.DateFound, was the date present in the time series?
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
@@ -1226,7 +1226,7 @@ subroutine ExtractOneDTimeSeries(TS,i,TSi,err,mess)
 !^**********************************************************************
 !^* Last modified: 11/01/2013
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -1267,7 +1267,7 @@ subroutine GatherMultiDTimeSeries(TS1D,TS,err,mess)
 !^**********************************************************************
 !^* Last modified: 22/11/2013
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -1312,7 +1312,7 @@ do s=1,Nx
     enddo
 enddo
 
-end subroutine GatherMultiDTimeSeries  
+end subroutine GatherMultiDTimeSeries
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine GatherMultiDTimeSeries_Matrix(TS1D,RemoveMV,TS,dates,err,mess)
 !^**********************************************************************
@@ -1322,7 +1322,7 @@ subroutine GatherMultiDTimeSeries_Matrix(TS1D,RemoveMV,TS,dates,err,mess)
 !^**********************************************************************
 !^* Last modified: 22/11/2013
 !^**********************************************************************
-!^* Comments: 
+!^* Comments:
 !^**********************************************************************
 !^* References:
 !^**********************************************************************
@@ -1378,7 +1378,7 @@ enddo
 if(associated(TS)) nullify(TS);allocate(TS(k,Nx))
 if(associated(dates)) nullify(dates);allocate(dates(k))
 TS=dummy(1:k,:);dates=dummydates(1:k)
-end subroutine GatherMultiDTimeSeries_Matrix   
+end subroutine GatherMultiDTimeSeries_Matrix
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 !!!!!!!!!!!

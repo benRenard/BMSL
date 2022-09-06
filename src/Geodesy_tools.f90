@@ -22,7 +22,8 @@ use kinds_dmsl_kit ! numeric kind definitions from DMSL
 
 implicit none
 Private
-public :: GetDistance, validateRasterGrid, rasterToPoints, interpolateOnGrid
+public :: GetDistance, validateRasterGrid, rasterToPoints, interpolateOnGrid, &
+          ReadRasterASC, WriteRasterASC
 
 type, public:: rasterGridType
     integer(mik) :: ncols=-99,nrows=-99
@@ -451,4 +452,160 @@ end select
 end subroutine interpolateOnGrid
 
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+subroutine ReadRasterASC(file,gridOnly,grid,M,err,mess)
+
+!^**********************************************************************
+!^* Purpose: read Raster grid in ASC format
+!^**********************************************************************
+!^* Programmer: Ben Renard, INRAE Aix
+!^**********************************************************************
+!^* Last modified: 03/08/2022
+!^**********************************************************************
+!^* Comments:
+!^**********************************************************************
+!^* References:
+!^**********************************************************************
+!^* 2Do List:
+!^**********************************************************************
+!^* IN
+!^*    1.file, address of data file
+!^*    2.[gridOnly], only read grid properties? default .false.
+!^* OUT
+!^*    1.grid, grid definition (rasterGrid object)
+!^*    2.[M], data matrix
+!^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*    4.mess, error message
+!^**********************************************************************
+use utilities_dmsl_kit, only:number_string
+character(*), intent(in)::file
+logical, optional, intent(in)::gridOnly
+type(rasterGridType), intent(out)::grid
+real(mrk), allocatable, intent(out), optional::M(:,:)
+integer(mik), intent(out)::err
+character(*),intent(out)::mess
+!locals
+character(250),parameter::procname='ReadRasterASC'
+integer(mik)::unt,j
+character(250)::txt
+logical::gOnly
+
+err=0;mess=''
+
+if(present(gridOnly)) then;gOnly=gridOnly;else;gOnly=.false.;endif
+
+call getSpareUnit(unt,err,mess)
+if(err>0) then;mess=trim(procname)//':'//trim(mess);return;endif
+open(unit=unt,file=trim(file), status='old', iostat=err)
+if(err>0) then;mess=trim(procname)//':problem opening file: '//trim(file);return;endif
+
+! Read grid properties
+read(unt,*,iostat=err) txt,grid%ncols
+if(err>0) then;mess=trim(procname)//':problem reading ncols';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%nrows
+if(err>0) then;mess=trim(procname)//':problem reading nrows';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%xllcorner
+if(err>0) then;mess=trim(procname)//':problem reading xllcorner';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%yllcorner
+if(err>0) then;mess=trim(procname)//':problem reading yllcorner';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%cellsize
+if(err>0) then;mess=trim(procname)//':problem reading cellsize';close(unt);return;endif
+read(unt,*,iostat=err) txt,grid%mv
+if(err>0) then;mess=trim(procname)//':problem reading NODATA_value';close(unt);return;endif
+
+if(.not.gOnly) then
+    if(.not.present(M)) then
+        mess=trim(procname)//':M should be present unless gridOnly=.true.'
+        err=1;return
+    endif
+    allocate(M(grid%nrows,grid%ncols))
+    do j=1, grid%nrows
+        read(unt,*,iostat=err) M(j,:)
+        if(err>0) then
+            mess=trim(procname)//':problem reading data at row:'//trim(number_string(j))
+            close(unt);return
+        endif
+    enddo
+endif
+
+close(unt)
+
+end subroutine ReadRasterASC
+
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+subroutine WriteRasterASC(grid,M,file,err,mess)
+
+!^**********************************************************************
+!^* Purpose: write Raster grid in ASC format
+!^**********************************************************************
+!^* Programmer: Ben Renard, INRAE Aix
+!^**********************************************************************
+!^* Last modified: 03/08/2022
+!^**********************************************************************
+!^* Comments:
+!^**********************************************************************
+!^* References:
+!^**********************************************************************
+!^* 2Do List:
+!^**********************************************************************
+!^* IN
+!^*    1. grid, grid definition (rasterGrid object)
+!^*    2. M, data matrix
+!^*    3. file, address of data file
+!^* OUT
+!^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*    4.mess, error message
+!^**********************************************************************
+use utilities_dmsl_kit, only:number_string
+type(rasterGridType), intent(in)::grid
+real(mrk), intent(in)::M(:,:)
+character(*), intent(in)::file
+integer(mik), intent(out)::err
+character(*),intent(out)::mess
+!locals
+character(250),parameter::procname='WriteRasterASC'
+integer(mik)::unt,j
+character(250)::fmat
+
+err=0;mess=''
+
+! Check M format
+if( size(M,dim=1)/=grid%nrows .or. size(M,dim=2)/=grid%ncols ) then
+    mess=trim(procname)//':M dimension incompatible with grid'
+    err=1;return
+endif
+
+call getSpareUnit(unt,err,mess)
+if(err>0) then;mess=trim(procname)//':'//trim(mess);return;endif
+open(unit=unt,file=trim(file), status='old', iostat=err)
+if(err>0) then;mess=trim(procname)//':problem opening file: '//trim(file);return;endif
+
+! write grid properties
+write(unt,'(G0,4X,I0)',iostat=err) adjustl('ncols'),grid%ncols
+if(err>0) then;mess=trim(procname)//':problem writing ncols';close(unt);return;endif
+write(unt,'(G0,4X,I0)',iostat=err) 'nrows',grid%nrows
+if(err>0) then;mess=trim(procname)//':problem writing nrows';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'xllcorner',grid%xllcorner
+if(err>0) then;mess=trim(procname)//':problem writing xllcorner';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'yllcorner',grid%yllcorner
+if(err>0) then;mess=trim(procname)//':problem writing yllcorner';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'cellsize',grid%cellsize
+if(err>0) then;mess=trim(procname)//':problem writing cellsize';close(unt);return;endif
+write(unt,'(G0,4X,e16.8)',iostat=err) 'NODATA_value',grid%mv
+if(err>0) then;mess=trim(procname)//':problem writing NODATA_value';close(unt);return;endif
+
+fmat="("//trim(number_string(grid%ncols))//"e16.8)"
+do j=1, grid%nrows
+    write(unt,fmat,iostat=err) M(j,:)
+    if(err>0) then
+        mess=trim(procname)//':problem writing data at row:'//trim(number_string(j))
+        close(unt);return
+    endif
+enddo
+
+close(unt)
+
+end subroutine WriteRasterASC
+
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 end module Geodesy_tools

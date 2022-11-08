@@ -476,7 +476,7 @@ subroutine ReadRasterASC(file,gridOnly,grid,M,err,mess)
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    4.mess, error message
 !^**********************************************************************
-use utilities_dmsl_kit, only:number_string
+use utilities_dmsl_kit, only:number_string,getSpareUnit
 character(*), intent(in)::file
 logical, optional, intent(in)::gridOnly
 type(rasterGridType), intent(out)::grid
@@ -555,7 +555,7 @@ subroutine WriteRasterASC(grid,M,file,err,mess)
 !^*    3.err, error code; <0:Warning, ==0:OK, >0: Error
 !^*    4.mess, error message
 !^**********************************************************************
-use utilities_dmsl_kit, only:number_string
+use utilities_dmsl_kit, only:number_string,getSpareUnit
 type(rasterGridType), intent(in)::grid
 real(mrk), intent(in)::M(:,:)
 character(*), intent(in)::file

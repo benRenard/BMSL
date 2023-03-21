@@ -14,7 +14,7 @@ module CircularStats_tools
 !~* 2Do List:
 !~**********************************************************************
 !~* Quick description of public procedures:
-!~*		1. GetCircularStats, 5 statistics frequently used in circular statistics
+!~*    1. GetCircularStats, 5 statistics frequently used in circular statistics
 !~**********************************************************************
 
 use kinds_dmsl_kit ! numeric kind definitions from DMSL
@@ -27,11 +27,11 @@ Contains
 
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subroutine GetCircularStats(x,& ! input data
-                             n,& !sample size
-                             meandir,meanlength,& ! dir & length of mean vector
-                             std,var,& ! std and variance
-                             package,& ! pack all stats into a single vector
-                             err,mess)
+                            n,& !sample size
+                            meandir,meanlength,& ! dir & length of mean vector
+                            std,var,& ! std and variance
+                            package,& ! pack all stats into a single vector
+                            err,mess)
 
 !^**********************************************************************
 !^* Purpose: Get a summary for circular data x
@@ -48,16 +48,16 @@ subroutine GetCircularStats(x,& ! input data
 !^* 2Do List:
 !^**********************************************************************
 !^* IN
-!^*		1.x, data vector (angles in radians
+!^*    1.x, data vector (angles in radians
 !^* OUT
-!^*		1. [n], sample size
-!^*		5. [meandir], direction of mean vector
-!^*		6. [meanlength], length of mean vector
-!^*		11. [std], circular standard deviation
-!^*		12. [var], circular variance
-!^*		16. [package], all stats above packed into a single vector
-!^*		17.err, error code; <0:Warning, ==0:OK, >0: Error
-!^*		18.mess, error message
+!^*    1. [n], sample size
+!^*    2. [meandir], direction of mean vector
+!^*    3. [meanlength], length of mean vector
+!^*    4. [std], circular standard deviation
+!^*    5. [var], circular variance
+!^*    6. [package], all stats above packed into a single vector
+!^*    7.err, error code; <0:Warning, ==0:OK, >0: Error
+!^*    8.mess, error message
 !^**********************************************************************
 use numerix_dmsl_kit, only:getmean, getvar, getCV,getmoments
 use utilities_dmsl_kit,only:pi,twopi

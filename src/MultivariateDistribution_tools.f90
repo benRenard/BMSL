@@ -61,6 +61,7 @@ Character(100), parameter:: & ! Shortcut for distribution names
             ! Uniform distributions
             FLAT='Flat',& ! Improper flat distribution (log-pdf=0 everywhere)
             UNIF='Uniform',& ! independant uniform distributions for each margin
+            UNIF_IID='Uniform_IID',& ! iid uniform distribution
             ! Gaussian distributions
             GAUSS='Gaussian', & ! Multivariate Gaussian Distribution
             GAUSS_IID='Gaussian_IID', & ! iid Gaussian Distribution
@@ -117,6 +118,9 @@ case(UNIF) ! bounds in r1
     do i=1,p
         allocate(par%r1(i)%v(2)) ! (lower bound, higher bound) for ith margin
     enddo
+case(UNIF_IID)! 2 scalar pars: lower bound in spar(1), upper bound in spar(2)
+    allocate(par%spar(2));par%spar=undefRN
+    allocate(par%logps(p));par%logps=undefRN
 case(GAUSS_IID)! 2 scalar pars: mean in spar(1), stdev in spar(2)
     allocate(par%spar(2));par%spar=undefRN
     allocate(par%logps(p));par%logps=undefRN
@@ -187,10 +191,15 @@ case(UNIF) ! bounds in r1
     do i=1,size(par%r1)
         if(size(par%r1(i)%v)/=2) then;err=1;mess=trim(procname)//':'//trim(DistID)//':wrong size [r1]';return;endif
         if(par%r1(i)%v(1)>=par%r1(i)%v(2)) then
-            mess=trim(procname)//':'//trim(DistID)//':unfeasible bounds (lower>=higher)'
-            err=1;return
+            ! mess=trim(procname)//':'//trim(DistID)//':unfeasible bounds (lower>=higher)'
+            ! err=1;return
+            feas=.false.;return
         endif
     enddo
+case(UNIF_IID)! 2 scalar pars: lower bound in spar(1), upper bound in spar(2)
+    if(.not.allocated(par%spar)) then;err=1;mess=trim(procname)//':'//trim(DistID)//':[spar] not allocated';return;endif
+    if(size(par%spar)/=2) then;err=1;mess=trim(procname)//':'//trim(DistID)//':wrong size [spar]';return;endif
+    if(par%spar(2)<=par%spar(1)) then;feas=.false.;return;endif
 case(GAUSS_IID)! 2 scalar pars: mean in spar(1), stdev in spar(2)
     if(.not.allocated(par%spar)) then;err=1;mess=trim(procname)//':'//trim(DistID)//':[spar] not allocated';return;endif
     if(size(par%spar)/=2) then;err=1;mess=trim(procname)//':'//trim(DistID)//':wrong size [spar]';return;endif
@@ -288,6 +297,12 @@ case(UNIF) ! bounds in r1
         endif
     enddo
     logp=sum(par%logps)
+case(UNIF_IID)
+    if(any(x<par%spar(1)) .or. any(x>par%spar(2))) then ! out of bounds
+        isnull=.true.; return
+    else
+        logp=-1.0_mrk*real(size(x),mrk)*log(par%spar(2)-par%spar(1))
+    endif
 case(GAUSS)
     if(par%isCov) then ! slow version where covariance needs to be inverted
         call gauss_logpdf(x=x,mu=par%vpar,sigma=par%mpar,logp=logp,&
@@ -386,6 +401,13 @@ case(FLAT)
     newLogp=0._mrk
 case(UNIF)
     a=par%r1(iComp)%v(1);b=par%r1(iComp)%v(2)
+    if(x(iComp)+inc<a .or. x(iComp)+inc>b) then ! out of bounds
+        isnull=.true.; return
+    else ! still within bounds, log-pdf does not change
+        newLogp=oldLogp
+    endif
+case(UNIF_IID)
+    a=par%spar(1);b=par%spar(2)
     if(x(iComp)+inc<a .or. x(iComp)+inc>b) then ! out of bounds
         isnull=.true.; return
     else ! still within bounds, log-pdf does not change

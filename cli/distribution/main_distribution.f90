@@ -224,18 +224,31 @@ subroutine printHelp()
 !^* 2Do List:
 !^**********************************************************************
 
-    write(*,'(a)') 'usage: distribution -name XXX -par XXX -a XXX [OPTIONS]'
+    write(*,'(a)') '.--------------.'
+    write(*,'(a)') '| distribution |'
+    write(*,'(a)') "'--------------'"
+    write(*,'(a)') 'A command-line utility to perform basic computations for distributions,'
+    write(*,'(a)') 'in particular pdf, cdf, quantile and pseudorandom sampling.'
+    write(*,'(a)') 'Results are written as a 2-column file (1-column for pseudorandom sampling)'
+    write(*,'(a)') ''
+    write(*,'(a)') 'usage: distribution -name XXX -par XXX -act XXX [OPTIONS]'
     write(*,'(a)') '  -name, --name:..............name of the distribution, character string'
     write(*,'(a)') '  -par, --parameters:.........parameters, comma-separated list of reals'
     write(*,'(a)') '  -act, --action:.............action, character in d/p/q/r indicating the action to perform'
     write(*,'(a)') '                              d=density (pdf), p=non-exceddance probability (cdf), '
     write(*,'(a)') '                              q=quantile, r=random realizations'
+    write(*,'(a)') ''
     write(*,'(a)') 'available options:'
     write(*,'(a)') '  -v, --version:..............print version information and exit'
     write(*,'(a)') '  -h, --help:.................print help and exit'
     write(*,'(a)') '  -n, --nsim XXX:.............number of realizations when -act is r. Default 1000'
     write(*,'(a)') '  -x, --xgrid XXX:............computation grid when -act is d,p or q, in the form: low,high,nvalues'
     write(*,'(a)') '  -rf, --result XXX:..........path to results file. Default distribution_result.txt'
+    write(*,'(a)') ''
+    write(*,'(a)') 'Example:'
+    write(*,'(a)') 'distribution -name GEV -par 100,50,-0.2 -act d -x 20,300,100 -rf myResultFile.txt'
+    write(*,'(a)') ''
+
 end subroutine printHelp
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

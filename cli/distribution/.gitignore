@@ -2,3 +2,7 @@ bin
 obj
 *.layout
 *.depend
+myResultFile.txt
+distribution_result.txt
+*.Rhistory
+distribution

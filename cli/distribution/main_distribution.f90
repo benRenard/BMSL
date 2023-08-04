@@ -9,7 +9,7 @@ implicit none
 !-----------------------
 ! Constants
 character(len_stdStrD),parameter::version="0.1.0 July 2023"
-character(250),parameter::fmt_numeric='e24.15',fmt_string='A24'
+character(250),parameter::fmt_numeric='e24.15E3',fmt_string='A24'
 integer(mik),parameter::nsim_def=100,nx_def=100
 character(len_vLongStr),parameter::resFile_def='distribution_result.txt'
 real(mrk),parameter:: low_def=0.001_mrk,high_def=0.999_mrk

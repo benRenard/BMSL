@@ -92,9 +92,9 @@ if(err/=0) return
 ! allocate pointers
 call GetParNumber(DistID=trim(dist), npar=npar, err=err, mess=mess)
 if(err/=0) return
-if(associated(parnames)) deallocate(parnames)
+if(associated(parnames)) nullify(parnames)
 allocate(parnames(npar))
-if(associated(priors)) deallocate(priors)
+if(associated(priors)) nullify(priors)
 allocate(priors(npar))
 ! keep reading
 do i=1,npar
@@ -114,6 +114,7 @@ do i=1,npar
     if(err/=0) return
   endif
 enddo
+
 close(1)
 
 end subroutine CRead_Inference
@@ -136,9 +137,9 @@ character(250)::mess
 open(unit=1, file=file,status="OLD",iostat=err)
 if(err/=0) return
 ! allocate pointers
-if(associated(parnames)) deallocate(parnames)
+if(associated(parnames)) nullify(parnames)
 allocate(parnames(npar))
-if(associated(priors)) deallocate(priors)
+if(associated(priors)) nullify(priors)
 allocate(priors(npar))
 ! keep reading
 do i=1,npar

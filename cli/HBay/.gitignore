@@ -1,0 +1,12 @@
+bin
+obj
+*.layout
+*.depend
+HBay
+MCMC.txt
+Nyons/quantiles*
+Nyons/predictive*
+Nyons/pdf*
+Nyons/cdf*
+Nyons/samples*
+Nyons/parameters*

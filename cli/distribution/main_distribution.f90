@@ -8,7 +8,7 @@ implicit none
 
 !-----------------------
 ! Constants
-character(len_stdStrD),parameter::version="0.2.0 April 2025"
+character(len_stdStrD),parameter::version="1.0.0 September 2025"
 character(250),parameter::fmt_numeric='e24.15E3',fmt_string='A24'
 integer(mik),parameter::nsim_def=100,nx_def=100
 character(len_vLongStr),parameter::resFile_def='distribution_result.txt'

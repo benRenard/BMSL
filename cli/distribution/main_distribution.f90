@@ -3,12 +3,13 @@ program distribution
 use kinds_dmsl_kit
 use utilities_dmsl_kit,only:countSubstringInString,number_string
 use Distribution_tools
+use uniran1_dmsl_mod,only:seed_uniran
 
 implicit none
 
 !-----------------------
 ! Constants
-character(len_stdStrD),parameter::version="1.0.0 September 2025"
+character(len_stdStrD),parameter::version="1.1.0 November 2025"
 character(250),parameter::fmt_numeric='e24.15E3',fmt_string='A24'
 integer(mik),parameter::nsim_def=100,nx_def=100
 character(len_vLongStr),parameter::resFile_def='distribution_result.txt'
@@ -26,7 +27,7 @@ integer(mik)::nx
 character(len_vLongStr)::resFile
 !-----------------------
 ! Misc.
-integer(mik)::i,err,narg,k
+integer(mik)::i,err,narg,k,seed
 character(len_vLongStr)::mess,arg
 logical::feas,isnull,doConsole
 !-----------------------
@@ -76,6 +77,23 @@ do while (i<=narg)
         else
             call consoleMessage(-1,'-act requires the action to be performed as a string in: d,p,q,r')
         endif
+     case ('-sd', '--seed')
+        i=i+1
+        if(i<=narg) then
+            call get_command_argument(i,arg)
+            read(arg,*,iostat=err) seed
+            if(err==0) then
+                call seed_uniran(put=seed)
+                i=i+1
+            else
+                call consoleMessage(-1,'-sd requires the seed as an integer number')
+            endif
+        else
+            call consoleMessage(-1,'-sd requires the seed as an integer number')
+        endif
+     case ('-rd', '--random')
+        call seed_uniran(CPUtime=.true.)
+        i=i+1
      case ('-v', '--version')
         write(*,*) 'version: ', trim(version)
         STOP
@@ -261,6 +279,8 @@ subroutine printHelp()
     write(*,'(a)') '  -n, --nsim XXX:.............number of realizations when -act is r. Default 1000'
     write(*,'(a)') '  -x, --xgrid XXX:............computation grid when -act is d,p or q, in the form: low,high,nvalues'
     write(*,'(a)') '  -rf, --result XXX:..........path to results file. Default distribution_result.txt'
+    write(*,'(a)') '  -sd k, --seed k:............set seed to k (k should be an integer)'
+    write(*,'(a)') '  -rd, --random:..............randomize seed (=> non-reproducible runs)'
     write(*,'(a)') ''
     write(*,'(a)') 'Example:'
     write(*,'(a)') 'distribution -name GEV -par 100,50,-0.2 -act d -x 20,300,100 -rf myResultFile.txt'
